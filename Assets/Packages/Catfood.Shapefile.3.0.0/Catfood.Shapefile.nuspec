@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Catfood.Shapefile</id>
+    <version>3.0.0</version>
+    <title>Catfood ESRI Shapefile Reader</title>
+    <authors>Robert Ellison</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>catfood_128.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://ithoughthecamewithyou.com/post/esri-shapefile-reader-in-net</projectUrl>
+    <description>Read-only, forward-only access to shapes and metadata in an ESRI Shapefile (.shp, .shx, .dbf).</description>
+    <releaseNotes>Replaced OleDb/Jet with DbfDataReader for direct DBF access. Now targets .NET Standard 2.1; .NET Framework is no longer supported. Legacy connection string APIs are obsolete and ignored.</releaseNotes>
+    <copyright>Copyright © 2009-2023 Robert Ellison and contributors</copyright>
+    <tags>shapefile, esri</tags>
+    <repository type="git" url="https://github.com/abfo/shapefile" commit="b91d01836c35b8454628ec897883c2f3dfdf5570" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="DbfDataReader" version="2.2.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
