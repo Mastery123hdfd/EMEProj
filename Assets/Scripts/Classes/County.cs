@@ -2,17 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CountyC : MonoBehaviour
+namespace Cty.World
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public class County{
+        private byte r;
+        private byte g;
+        private byte b;
+        private float x;
+        private float y;
+        private string name;
+        public int id;
+        private Prefecture ParentPrefecture;
+        private Province ParentProvince;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public class Prefecture{
+        private County[] counties;
+        private float x;
+        private float y;
+        public string name;
+        public Province ParentProvince;
+    }
+    public class Province{
+        public string name;
+        private float x;
+        private float y;
+        private Prefecture[] prefectures;
     }
 }

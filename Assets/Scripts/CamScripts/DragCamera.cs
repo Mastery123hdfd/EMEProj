@@ -29,22 +29,23 @@ public class DragCamera:MonoBehaviour
     void Start(){
         map = new Plane(Vector3.up, Vector3.zero);
         targetHeight = maxH;
-        camangle = Camera.fieldOfView/2;
+        camangle = Camera.main.fieldOfView * Mathf.Deg2Rad /2f;
     }
     void Update(){
-        if(timeCounter > 0){
+        Vector3 pos = transform.position;
+        camy = Mathf.Tan(camangle) * pos.y;
+        camx = camy * Camera.main.aspect;
+        left = Mathf.Abs(pos.x -camx) > maxX;
+        right = Mathf.Abs(pos.x + camx) > maxX;
+        up = Mathf.Abs(pos.z+camy) > maxY;
+        down = Mathf.Abs(pos.z-camy) > maxY;
+        if(timeCounter >= 0){
             timeCounter -=1;
         }
-        Vector3 pos = transform.position;
-        camx = Mathf.tan(camangle) * pos.y;
-        camy = Mathf.tan(camangle) * pos.y;
-        up = Mathf.abs(camx+pos.x) > maxX;
-        down = Mathf.abs(camx-pos.x) > maxX;
-        right = Mathf.abs(camy+pos.z) > maxY;
-        left = Mathf.abs(camy-pos.z) > maxY;
         float scroll = Mouse.current.scroll.ReadValue().y;
         targetHeight -= scroll *zoomSensitivity;
         targetHeight = Mathf.Clamp(targetHeight, minH, maxH);
+        
         pos.y = Mathf.Lerp(pos.y,targetHeight,12f*Time.deltaTime);
         transform.position = pos;
         if(Mouse.current.leftButton.wasPressedThisFrame){
@@ -57,33 +58,30 @@ public class DragCamera:MonoBehaviour
         }
         if(Mouse.current.leftButton.isPressed){
             Vector3 current = getClickPoint();
-            Vector3 trans = dragOrigin-current;
-            if(up && trans.x>0){
-                trans.x = 0;
-            }
-            if(down && trans.x<0){
-                trans.x = 0;
-            }
-            if(left && trans.z<0){
-                trans.z = 0;
-            }
-            if(left && trans.z > 0){
-                trans.z = 0;
-            }
-            transform.position += (trans)*dragSensitivity;
+            Vector3 dragMove = dragOrigin-current;
+            if(right && dragMove.x > 0){dragMove.x = 0;}
+            if(left && dragMove.x < 0) dragMove.x = 0;
+            if(up && dragMove.z > 0) dragMove.z = 0;
+            if(down && dragMove.z < 0) dragMove.z = 0;
+            transform.position += dragMove*dragSensitivity;
             dragOrigin = current;
         }
+        Debug.Log("Left: " + left+" Right: " + right+" Up: " + up+" Down: " + down);
         Vector3 move = Vector3.zero;
         Vector3 mouse = Mouse.current.position.ReadValue();
-        if(mouse.x < edgeSize && !left) move.x-=1;
+        if(mouse.x < edgeSize && !down) move.x-=1;
         if(mouse.x > Screen.width-edgeSize && !right) move.x+=1;
-        if(mouse.y < edgeSize && !down) move.z-=1;
+        if(mouse.y < edgeSize && !left) move.z-=1;
         if(mouse.y > Screen.height-edgeSize && !up) move.z+=1;
-        
+        if(right && move.x > 0){move.x = 0;}
+        if(left && move.x < 0) move.x = 0;
+        if(up && move.z > 0) move.z = 0;
+        if(down && move.z < 0) move.z = 0;
         transform.position += move.normalized*mSpeed*Time.deltaTime;
+        
     }
     public Vector3 getClickPoint(){
-        Ray ray = map.ToRay(Mouse.current.position.ReadValue());
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         if(map.Raycast(ray, out float distance)){
             return ray.GetPoint(distance);
         }

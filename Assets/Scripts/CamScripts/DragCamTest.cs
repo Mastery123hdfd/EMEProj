@@ -18,7 +18,7 @@ public class DragCamTest : MonoBehaviour
     {
         if(Mouse.current.leftButton.isPressed){
             Debug.Log("Pressed");
-            Debug.Log(dc.getClickPoint());
+            Debug.Log("Coords:" + dc.getClickPoint());
         }
     }
 }
