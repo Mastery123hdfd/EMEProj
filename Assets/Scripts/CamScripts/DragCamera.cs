@@ -32,8 +32,6 @@ public class DragCamera:MonoBehaviour
     private ClickHandler ch;
     public float rayDistance;
     public Texture2D imageMap;
-    public Color[] colors;
-    public string[] texts;
     //private ClickHandler ch;
     void Start(){
         map = new Plane(Vector3.up, Vector3.zero);
@@ -50,7 +48,7 @@ public class DragCamera:MonoBehaviour
         right = Mathf.Abs(pos.x + camx) > maxX;
         up = Mathf.Abs(pos.z+camy) > maxY;
         down = Mathf.Abs(pos.z-camy) > maxY;
-        if(timeCounter >= 0){
+        if(timeCounter > 0){
             timeCounter -=1;
         }
         float scroll = Mouse.current.scroll.ReadValue().y;
@@ -63,8 +61,8 @@ public class DragCamera:MonoBehaviour
             dragOrigin = getClickPoint();
             if(timeCounter == 0){
                 timeCounter = 25;
-            } else {
-                ch.processColor(getClickColor());
+            } else if(TryGetClickColor(out Color32 picked)){
+                ch.processColor(picked);
             }
         }
         if(Mouse.current.leftButton.isPressed){
@@ -98,30 +96,33 @@ public class DragCamera:MonoBehaviour
         }
         return Vector3.zero;
     }
-    public int FindIndexFromColor(Color color){
-        for(int i = 0; i < colors.Length; i++){
-            if(colors[i] == color){return i;}
+    public bool TryGetClickColor(out Color32 color){
+        color = default;
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        float dist = rayDistance > 0f ? rayDistance : Mathf.Infinity;
+        if(!Physics.Raycast(ray, out RaycastHit hit, dist)){
+            Debug.Log("Click missed the map");
+            return false;
         }
-        return -1;
-    }
-    public Color getClickColor(){
-        RaycastHit hit;
-        if(Physics.Raycast(Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue()),out hit, rayDistance)){
-            Renderer renderer = hit.transform.GetComponent<MeshRenderer>();
-            Texture2D texture = GetComponent<Renderer>().material.mainTexture as Texture2D;
-            Vector2 pixelUV = hit.textureCoord;
-            pixelUV.x *= texture.width;
-            pixelUV.y *= texture.height;
-            Vector2 tiling = renderer.material.mainTextureScale;
-            Color color = imageMap.GetPixel(Mathf.FloorToInt(pixelUV.x * tiling.x), Mathf.FloorToInt(pixelUV.y * tiling.y));
-            int index = FindIndexFromColor(color);
-            if(index >= 0){Debug.Log(texts[index]);}
-            return color;
+        if(!(hit.collider is MeshCollider)){
+            Debug.LogWarning("Map needs a MeshCollider, otherwise textureCoord is always (0,0)");
+            return false;
         }
-        else{
-            Debug.Log("Click out of bounds");
-            return new Color(0f,0f,0f,0f);
+        Vector2 uv = hit.textureCoord;
+        Renderer r = hit.collider.GetComponent<Renderer>();
+        if(r != null){
+            Material m = r.sharedMaterial;
+            uv = Vector2.Scale(uv, m.mainTextureScale) + m.mainTextureOffset;
         }
+        int x = Mathf.Clamp(Mathf.FloorToInt(uv.x * imageMap.width),  0, imageMap.width  - 1);
+        int y = Mathf.Clamp(Mathf.FloorToInt(uv.y * imageMap.height), 0, imageMap.height - 1);
+        Color p = imageMap.GetPixel(x, y);
+        color = new Color32(
+            (byte)Mathf.RoundToInt(p.r * 255f),
+            (byte)Mathf.RoundToInt(p.g * 255f),
+            (byte)Mathf.RoundToInt(p.b * 255f),
+            255);
+        return true;
     }
 
 }

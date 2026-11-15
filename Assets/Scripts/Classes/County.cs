@@ -33,9 +33,9 @@ namespace Cty.World
             this.calcColors();
         }
         public void calcColors(){
-            this.r = (byte)((id>>16) & 0xFF);
-            this.g = (byte)((id >> 8 ) & 0xFF);
-            this.b = (byte)(id & 0xFF);
+            this.r = (byte)((id >> 8) & 0xFF);
+            this.g = (byte)(id & 0xFF);
+            this.b = (byte)((id >> 16) & 0xFF);
         }
 
     }
