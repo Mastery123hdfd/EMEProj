@@ -1,18 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cty.World;
 
-public class ClickHandler : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
+namespace Cty.Click{
+    public class ClickHandler
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public void processColor(Color c){
+            
+            float id = c.r + 256 * c.g + 65536 * c.b;
+            Debug.Log(id);
+            County county = WorldHandler.counties[(int)id];
+            Debug.Log(id+" County: " + county.name);
+        }
     }
 }

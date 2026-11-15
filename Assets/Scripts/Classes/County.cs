@@ -1,28 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace Cty.World
 {
     public class County{
-        private byte r;
-        private byte g;
-        private byte b;
+        [JsonIgnore]private byte r;
+        [JsonIgnore]private byte g;
+        [JsonIgnore]private byte b;
         [JsonProperty("County")]
-        private string name {get; set;};
+        public string name {get;}
         [JsonProperty("Type")]
         private string type {get; set;}
 
 
-        public int id {get; set;}
+        [JsonIgnore]public int id {get; set;}
 
-        private Prefecture ParentPrefecture {get; set;}
-        private Province ParentProvince {get; set;}
+        [JsonIgnore]public Prefecture ParentPrefecture {get; set;}
+        [JsonIgnore]public Province ParentProvince {get; set;}
         //LOADING PURPOSES ONLY
         [JsonProperty("District")]
-        private string ParentPrefectureName;
+        public string ParentPrefectureName {get; set;}
         [JsonProperty("Province")]
-        private string ParentProvinceName;
+        public string ParentProvinceName {get; set;}
 
         public County(Prefecture ParentPrefecture, Province ParentProvince, string name, int id){
             this.ParentPrefecture=ParentPrefecture;
@@ -32,25 +33,25 @@ namespace Cty.World
             this.calcColors();
         }
         public void calcColors(){
-            this.r = id / 256;
-            this.g = id / 65536;
-            this.b = id % 65536;
+            this.r = (byte)((id>>16) & 0xFF);
+            this.g = (byte)((id >> 8 ) & 0xFF);
+            this.b = (byte)(id & 0xFF);
         }
 
     }
     public class Prefecture{
-        public List<County> counties {get; set;}
-        private string name;
-        private Province ParentProvince;
-        public Province(string name, Province Parent){
+        public List<County> counties {get;} = new List<County>();
+        public string name {get;}
+        public Province ParentProvince {get;}
+        public Prefecture(string name, Province Parent){
             this.name = name;
             this.ParentProvince = Parent;
         }
     }
     public class Province{
-        private string name;
-        public List<Prefecture> prefectures {get; set;}
-        public Prefecture(string name){
+        public string name {get;}
+        public List<Prefecture> prefectures {get;} = new List<Prefecture>();
+        public Province(string name){
             this.name = name;
         }
     }

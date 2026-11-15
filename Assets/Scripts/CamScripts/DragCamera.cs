@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cty.Click;
 
 public class DragCamera:MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class DragCamera:MonoBehaviour
     [SerializeField] private float dragSensitivity = 0.5f;
     [SerializeField] private float maxX = 16320f;
     [SerializeField] private float maxY = 10050f;
+    
+    private GameObject mapObject;
     private float camangle;
     private float targetHeight;
     private Plane map;
@@ -26,10 +29,18 @@ public class DragCamera:MonoBehaviour
     private bool right;
     private bool down;
     private bool left;
+    private ClickHandler ch;
+    public float rayDistance;
+    public Texture2D imageMap;
+    public Color[] colors;
+    public string[] texts;
+    //private ClickHandler ch;
     void Start(){
         map = new Plane(Vector3.up, Vector3.zero);
         targetHeight = maxH;
         camangle = Camera.main.fieldOfView * Mathf.Deg2Rad /2f;
+        ch = new ClickHandler();
+        mapObject = GameObject.Find("Map");
     }
     void Update(){
         Vector3 pos = transform.position;
@@ -53,7 +64,7 @@ public class DragCamera:MonoBehaviour
             if(timeCounter == 0){
                 timeCounter = 25;
             } else {
-
+                ch.processColor(getClickColor());
             }
         }
         if(Mouse.current.leftButton.isPressed){
@@ -66,7 +77,7 @@ public class DragCamera:MonoBehaviour
             transform.position += dragMove*dragSensitivity;
             dragOrigin = current;
         }
-        Debug.Log("Left: " + left+" Right: " + right+" Up: " + up+" Down: " + down);
+        //Debug.Log("Left: " + left+" Right: " + right+" Up: " + up+" Down: " + down);
         Vector3 move = Vector3.zero;
         Vector3 mouse = Mouse.current.position.ReadValue();
         if(mouse.x < edgeSize && !down) move.x-=1;
@@ -87,4 +98,30 @@ public class DragCamera:MonoBehaviour
         }
         return Vector3.zero;
     }
+    public int FindIndexFromColor(Color color){
+        for(int i = 0; i < colors.Length; i++){
+            if(colors[i] == color){return i;}
+        }
+        return -1;
+    }
+    public Color getClickColor(){
+        RaycastHit hit;
+        if(Physics.Raycast(Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue()),out hit, rayDistance)){
+            Renderer renderer = hit.transform.GetComponent<MeshRenderer>();
+            Texture2D texture = GetComponent<Renderer>().material.mainTexture as Texture2D;
+            Vector2 pixelUV = hit.textureCoord;
+            pixelUV.x *= texture.width;
+            pixelUV.y *= texture.height;
+            Vector2 tiling = renderer.material.mainTextureScale;
+            Color color = imageMap.GetPixel(Mathf.FloorToInt(pixelUV.x * tiling.x), Mathf.FloorToInt(pixelUV.y * tiling.y));
+            int index = FindIndexFromColor(color);
+            if(index >= 0){Debug.Log(texts[index]);}
+            return color;
+        }
+        else{
+            Debug.Log("Click out of bounds");
+            return new Color(0f,0f,0f,0f);
+        }
+    }
+
 }
