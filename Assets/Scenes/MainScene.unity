@@ -430,12 +430,14 @@ MonoBehaviour:
   edgeSize: 20
   mSpeed: 60
   zSpeed: 20
-  minH: 0.5
+  minH: 6.079998
   maxH: 230
   zoomSensitivity: 0.06
   dragSensitivity: 0.75
   maxX: 16320
   maxY: 10050
+  rayDistance: 0
+  imageMap: {fileID: 0}
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
