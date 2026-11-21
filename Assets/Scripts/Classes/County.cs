@@ -9,8 +9,11 @@ namespace Cty.World
         [JsonIgnore]private byte r;
         [JsonIgnore]private byte g;
         [JsonIgnore]private byte b;
+        // Settable, with a parameterless constructor below. With a get-only name and only the
+        // 4-argument constructor, Json.NET matches constructor parameters to the JSON key names
+        // ("County", not "name"), so name can silently stay null.
         [JsonProperty("County")]
-        public string name {get;}
+        public string name {get; set;}
         [JsonProperty("Type")]
         private string type {get; set;}
 
@@ -25,6 +28,8 @@ namespace Cty.World
         [JsonProperty("Province")]
         public string ParentProvinceName {get; set;}
 
+        public County(){}
+
         public County(Prefecture ParentPrefecture, Province ParentProvince, string name, int id){
             this.ParentPrefecture=ParentPrefecture;
             this.ParentProvince = ParentProvince;
@@ -32,9 +37,10 @@ namespace Cty.World
             this.name = name;
             this.calcColors();
         }
+        // Same layout as the id map raster: R = middle byte, G = low byte, B = high byte.
         public void calcColors(){
-            this.r = (byte)((id >> 8) & 0xFF);
-            this.g = (byte)(id & 0xFF);
+            this.r = (byte)((id) & 0xFF);
+            this.g = (byte)((id >> 8) & 0xFF);
             this.b = (byte)((id >> 16) & 0xFF);
         }
 
