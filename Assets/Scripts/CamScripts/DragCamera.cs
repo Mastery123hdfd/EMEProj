@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Cty.DoubleClick;
 using Cty.World;
+using Cty.Paint;
 
 public class DragCamera:MonoBehaviour
 {
@@ -39,6 +40,7 @@ public class DragCamera:MonoBehaviour
     private IdMap idMap;
     private int pulse = 0;
     private readonly Dictionary<int,int> votes = new Dictionary<int,int>();
+    private PaintFill paintFill;
     public County SelectedCounty { get; private set; }
 
     void Start(){
@@ -49,6 +51,7 @@ public class DragCamera:MonoBehaviour
         textureObject = GameObject.Find("VisualMap");
         idMap = IdMap.Load(idMapResource);
         ValidateSetup();
+        paintFill = GameObject.Find("Initializer").GetComponent<PaintFill>();
     }
 
     // Logs the setup problems that make clicks land on the wrong pixel.
@@ -64,8 +67,8 @@ public class DragCamera:MonoBehaviour
         if(idMap != null && r != null && r.sharedMaterial != null && r.sharedMaterial.mainTexture != null){
             Texture shown = r.sharedMaterial.mainTexture;
             Debug.Log($"Map shows '{shown.name}' {shown.width}x{shown.height}; id map is {idMap.Width}x{idMap.Height}");
+
             
-            //TO BE IMPLEMENTED
 
 
             float shownAspect = (float)shown.width / shown.height;
@@ -103,6 +106,7 @@ public class DragCamera:MonoBehaviour
             dragOrigin = getClickPoint();
             if(doubleClicked){
                 SelectCountyAtMouse();
+                paintFill.FillAtWorldPoint(getClickPoint());
             }
         }
         if(mouse.leftButton.isPressed){
