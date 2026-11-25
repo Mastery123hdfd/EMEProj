@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="Parent" style="flex-grow: 1; -unity-material: url(&quot;&quot;); background-color: rgba(0, 0, 0, 0); width: auto; height: auto;">
+        <ui:VisualElement name="Name" style="flex-grow: 1; width: auto; height: 100px; background-color: rgb(77, 77, 77); min-height: 0; max-height: 123px; justify-content: flex-end; align-content: auto; align-self: auto; align-items: flex-end; bottom: -200px; position: relative; right: auto; top: auto; left: auto;"/>
+        <ui:ListView/>
+    </ui:VisualElement>
+</ui:UXML>

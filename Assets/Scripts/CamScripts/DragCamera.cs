@@ -40,7 +40,7 @@ public class DragCamera:MonoBehaviour
     private IdMap idMap;
     private int pulse = 0;
     private readonly Dictionary<int,int> votes = new Dictionary<int,int>();
-    private PaintFill paintFill;
+    ///private PaintFill paintFill;
     public County SelectedCounty { get; private set; }
 
     void Start(){
@@ -51,7 +51,7 @@ public class DragCamera:MonoBehaviour
         textureObject = GameObject.Find("VisualMap");
         idMap = IdMap.Load(idMapResource);
         ValidateSetup();
-        paintFill = GameObject.Find("Initializer").GetComponent<PaintFill>();
+        //paintFill = GameObject.Find("Initializer").GetComponent<PaintFill>();
     }
 
     // Logs the setup problems that make clicks land on the wrong pixel.
@@ -106,7 +106,7 @@ public class DragCamera:MonoBehaviour
             dragOrigin = getClickPoint();
             if(doubleClicked){
                 SelectCountyAtMouse();
-                paintFill.FillAtWorldPoint(getClickPoint());
+                //paintFill.FillAtWorldPoint(getClickPoint());
             }
         }
         if(mouse.leftButton.isPressed){
